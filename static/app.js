@@ -21,6 +21,24 @@ function showView(name) {
 $$('.nav-item').forEach((item) => item.addEventListener('click', () => showView(item.dataset.view)));
 $('#refresh-button').addEventListener('click', () => { const active = $('.nav-item.active')?.dataset.view || 'dashboard'; showView(active); toast('Dashboard refreshed'); });
 
+const appShell = $('.app-shell');
+const panelToggle = $('#panel-toggle');
+const savedPanelState = localStorage.getItem('fieldsafe-sidebar-collapsed');
+const initiallyCollapsed = savedPanelState === null ? window.matchMedia('(max-width: 650px)').matches : savedPanelState === 'true';
+appShell.classList.toggle('sidebar-collapsed', initiallyCollapsed);
+function syncPanelToggle() {
+  const expanded = !appShell.classList.contains('sidebar-collapsed');
+  panelToggle.setAttribute('aria-expanded', String(expanded));
+  panelToggle.setAttribute('aria-label', `${expanded ? 'Collapse' : 'Expand'} side panel`);
+  panelToggle.title = `${expanded ? 'Collapse' : 'Expand'} side panel`;
+}
+syncPanelToggle();
+panelToggle.addEventListener('click', () => {
+  const collapsed = appShell.classList.toggle('sidebar-collapsed');
+  localStorage.setItem('fieldsafe-sidebar-collapsed', String(collapsed));
+  syncPanelToggle();
+});
+
 $('#report-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const form = event.currentTarget;

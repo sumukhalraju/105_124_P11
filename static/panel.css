@@ -1,0 +1,21 @@
+.topbar{justify-content:flex-start;gap:16px}
+.panel-toggle{width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--green);font-size:18px;cursor:pointer;flex:none}
+.panel-toggle:hover{background:#edf7f1}
+.panel-toggle:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.brand{margin-right:auto}
+.app-shell .sidebar{transition:width .2s ease,padding .2s ease;overflow:hidden;flex:none}
+.app-shell.sidebar-collapsed .sidebar{width:68px;padding-left:9px;padding-right:9px}
+.app-shell.sidebar-collapsed .workspace-label,
+.app-shell.sidebar-collapsed .nav-label,
+.app-shell.sidebar-collapsed .sidebar-footer>div:last-child{display:none}
+.app-shell.sidebar-collapsed .nav-item{justify-content:center;padding-left:10px;padding-right:10px}
+.app-shell.sidebar-collapsed .sidebar-footer{justify-content:center}
+@media(max-width:650px){
+  .app-shell.sidebar-collapsed .sidebar{width:58px}
+  .app-shell:not(.sidebar-collapsed) .sidebar{width:205px;padding-left:12px;padding-right:12px}
+  .app-shell:not(.sidebar-collapsed) .nav-label{position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal}
+  .app-shell:not(.sidebar-collapsed) .workspace-label,
+  .app-shell:not(.sidebar-collapsed) .sidebar-footer>div:last-child{display:block}
+  .app-shell:not(.sidebar-collapsed) .nav-item{justify-content:flex-start}
+}
+@media(prefers-reduced-motion:reduce){.app-shell .sidebar{transition:none}}

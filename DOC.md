@@ -32,7 +32,7 @@ Flask application (app.py)
         └── SQLite (reports, dispatches, handlers, status_history)
 ```
 
-The application factory is `create_app()`. It initializes the schema and seeds two handlers for each zone. A file-backed database is used by default at `instance/portal.db`; tests use a fresh temporary database.
+The application factory is `create_app()`. It initializes the schema and seeds two handlers for each zone. A file-backed database is used by default at `instance/portal.db`; tests use a fresh temporary database. The dashboard navigation side panel can be expanded or collapsed with the header toggle, and the browser remembers that choice.
 
 ## Formal validation model
 

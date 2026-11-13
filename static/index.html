@@ -6,14 +6,16 @@
   <meta name="description" content="Operational dashboard for routing and resolving food safety inspection reports.">
   <title>FieldSafe | Food Inspection Portal</title>
   <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/panel.css">
 </head>
 <body>
   <header class="topbar">
+    <button class="panel-toggle" id="panel-toggle" type="button" aria-controls="primary-navigation" aria-expanded="true" aria-label="Collapse side panel" title="Collapse side panel"><span aria-hidden="true">☰</span></button>
     <div class="brand"><span class="brand-mark">FS</span><div><strong>FieldSafe</strong><span>Food Safety Inspection Portal</span></div></div>
     <div class="topbar-status"><span class="status-dot"></span> Operations live <button class="icon-button" id="refresh-button" type="button" aria-label="Refresh dashboard" title="Refresh dashboard">↻</button></div>
   </header>
   <div class="app-shell">
-    <aside class="sidebar" aria-label="Primary navigation">
+    <aside class="sidebar" id="primary-navigation" aria-label="Primary navigation">
       <div class="workspace-label">WORKSPACE</div>
       <button class="nav-item active" data-view="submit"><span>＋</span><span class="nav-label">New report</span></button>
       <button class="nav-item" data-view="dashboard"><span>▦</span><span class="nav-label">User dashboard</span></button>
