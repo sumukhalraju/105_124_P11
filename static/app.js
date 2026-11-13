@@ -19,7 +19,6 @@ function showView(name) {
   if (name === 'analytics') loadAnalytics();
 }
 $$('.nav-item').forEach((item) => item.addEventListener('click', () => showView(item.dataset.view)));
-$('#refresh-button').addEventListener('click', () => { const active = $('.nav-item.active')?.dataset.view || 'dashboard'; showView(active); toast('Dashboard refreshed'); });
 
 const appShell = $('.app-shell');
 const panelToggle = $('#panel-toggle');
@@ -38,6 +37,16 @@ panelToggle.addEventListener('click', () => {
   localStorage.setItem('fieldsafe-sidebar-collapsed', String(collapsed));
   syncPanelToggle();
 });
+
+function refreshActiveDashboard() {
+  if (document.visibilityState !== 'visible') return;
+  const activeView = $('.view.active')?.id;
+  if (activeView === 'view-dashboard') loadDashboard();
+  else if (activeView === 'view-handler') loadHandlers();
+  else if (activeView === 'view-routing') loadRouting();
+  else if (activeView === 'view-analytics') loadAnalytics();
+}
+window.setInterval(refreshActiveDashboard, 60_000);
 
 let activeReport = null;
 const reportDialog = $('#report-dialog');

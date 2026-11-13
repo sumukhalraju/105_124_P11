@@ -3,6 +3,7 @@
 .panel-toggle:hover{background:#edf7f1}
 .panel-toggle:focus-visible{outline:3px solid var(--green);outline-offset:2px}
 .brand{margin-right:auto}
+.refresh-caption{font-size:11px;color:#84928b;border-left:1px solid var(--line);padding-left:10px;margin-left:4px}
 .app-shell .sidebar{transition:width .2s ease,padding .2s ease;overflow:hidden;flex:none}
 .app-shell.sidebar-collapsed .sidebar{width:68px;padding-left:9px;padding-right:9px}
 .app-shell.sidebar-collapsed .workspace-label,
