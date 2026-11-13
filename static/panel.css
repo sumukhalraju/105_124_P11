@@ -30,6 +30,10 @@
 .table-wrap caption.sr-only{position:absolute!important}
 @media(max-width:750px){.table-toolbar{align-items:stretch}.table-toolbar .toolbar-actions{width:100%;justify-content:flex-start;flex-wrap:wrap}.toolbar-actions input{flex:1;min-width:170px}.toolbar-actions select{flex:0 0 140px}}
 @media(min-width:751px) and (max-width:1100px){.table-toolbar{flex-wrap:wrap;row-gap:12px}.table-toolbar>div:first-child{flex-basis:100%}.table-toolbar .toolbar-actions{width:100%;justify-content:flex-start}.toolbar-actions input{flex:1}}
+.table-wrap table{border:1px solid #d7e1db;border-collapse:collapse}
+.table-wrap th,.table-wrap td{border-right:1px solid #e0e7e2;border-bottom:1px solid #dfe6e1}
+.table-wrap th:last-child,.table-wrap td:last-child{border-right:0}
+.table-wrap tbody tr:last-child td{border-bottom:0}
 .report-dialog{width:min(850px,calc(100vw - 28px));max-height:90vh;padding:25px;border:1px solid var(--line);border-radius:15px;color:var(--ink);box-shadow:0 25px 80px #10271e55}
 .report-dialog::backdrop{background:#10271e88;backdrop-filter:blur(2px)}
 .dialog-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
