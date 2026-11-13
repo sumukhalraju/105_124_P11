@@ -19,6 +19,16 @@
   .app-shell:not(.sidebar-collapsed) .nav-item{justify-content:flex-start}
 }
 @media(prefers-reduced-motion:reduce){.app-shell .sidebar{transition:none}}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.table-toolbar{align-items:center;min-height:76px}
+.table-toolbar>div:first-child{flex:1;min-width:190px}
+.table-toolbar .toolbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:0 1 auto}
+.main-content,.table-card,.table-toolbar .toolbar-actions{min-width:0}
+.toolbar-actions input{width:260px;min-width:190px}
+.toolbar-actions select{min-width:130px}
+.table-wrap caption.sr-only{position:absolute!important}
+@media(max-width:750px){.table-toolbar{align-items:stretch}.table-toolbar .toolbar-actions{width:100%;justify-content:flex-start;flex-wrap:wrap}.toolbar-actions input{flex:1;min-width:170px}.toolbar-actions select{flex:0 0 140px}}
+@media(min-width:751px) and (max-width:1100px){.table-toolbar{flex-wrap:wrap;row-gap:12px}.table-toolbar>div:first-child{flex-basis:100%}.table-toolbar .toolbar-actions{width:100%;justify-content:flex-start}.toolbar-actions input{flex:1}}
 .report-dialog{width:min(850px,calc(100vw - 28px));max-height:90vh;padding:25px;border:1px solid var(--line);border-radius:15px;color:var(--ink);box-shadow:0 25px 80px #10271e55}
 .report-dialog::backdrop{background:#10271e88;backdrop-filter:blur(2px)}
 .dialog-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
