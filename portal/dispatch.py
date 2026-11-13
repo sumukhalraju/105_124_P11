@@ -38,7 +38,7 @@ def _eligible_handlers(conn: sqlite3.Connection, zone_key: str | None, critical:
         load = loads.get(row["id"], 0)
         role_order = 0 if row["role"] == "District Officer" else 1
         local_order = 0 if zone_key and row["zone_key"] == zone_key else 1
-        return (local_order, role_order, load, row["id"])
+        return (local_order, load, role_order, row["id"])
     return [row for row in sorted(pool, key=sort_key) if loads.get(row["id"], 0) < min(row["capacity"], 10)]
 
 

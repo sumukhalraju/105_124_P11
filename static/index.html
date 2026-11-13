@@ -64,6 +64,11 @@
       <section class="view" id="view-routing"><div class="page-heading"><div><p class="eyebrow">ROUTING MANAGEMENT</p><h1>Routing table & decisions</h1><p class="muted">Six deterministic zones with a documented fallback queue.</p></div></div><div id="routing-grid" class="routing-grid"></div><div class="card table-card"><div class="table-toolbar"><div><h2>Queue & escalation rules</h2><p>Critical priority overrides and capacity exceptions are auditable.</p></div></div><div id="routing-note" class="routing-note"></div></div></section>
 
       <section class="view" id="view-analytics"><div class="page-heading"><div><p class="eyebrow">ANALYTICS</p><h1>Operational intelligence</h1><p class="muted">Distribution by category, zone and assignment outcome.</p></div></div><div id="analytics-kpis" class="stats-grid"></div><div class="analytics-grid"><div class="card chart-card"><h2>Category mix</h2><div id="category-chart" class="bars" aria-label="Category mix chart"></div></div><div class="card chart-card"><h2>Zone distribution</h2><div id="zone-chart" class="bars" aria-label="Zone distribution chart"></div></div><div class="card chart-card wide"><h2>Assignment outcomes</h2><div id="assignment-chart" class="bars horizontal" aria-label="Assignment outcomes chart"></div></div></div></section>
+      <dialog id="report-dialog" class="report-dialog" aria-labelledby="report-dialog-title">
+        <div class="dialog-header"><div><p class="eyebrow">INSPECTION RECORD</p><h2 id="report-dialog-title">Report details</h2></div><button id="close-report-dialog" class="dialog-close" type="button" aria-label="Close report details">×</button></div>
+        <div id="report-detail-content" class="report-detail-content"></div>
+        <div class="dialog-actions"><button id="report-pdf" class="secondary-button" type="button">Print / Save PDF</button><button id="report-json" class="secondary-button" type="button">Download JSON</button><button id="report-csv" class="primary-button" type="button">Download CSV</button></div>
+      </dialog>
     </main>
   </div>
   <script src="/static/app.js"></script>

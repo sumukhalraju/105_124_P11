@@ -1,4 +1,5 @@
 from tests.conftest import payload
+import pytest
 
 
 def test_health_and_validation_spec(client):
@@ -61,6 +62,37 @@ def test_all_six_routing_zones_are_exposed(client):
     assert [item["zone_key"] for item in routing] == ["Z1", "Z2", "Z3", "Z4", "Z5", "Z6"]
 
 
+@pytest.mark.parametrize("prefix, zone", [("1", "Z1"), ("2", "Z2"), ("3", "Z3"), ("4", "Z4"), ("5", "Z5"), ("6", "Z6")])
+def test_valid_report_dispatches_to_each_pin_zone(client, prefix, zone):
+    report = client.post("/api/reports", json=payload(pin_code=f"{prefix}60001")).get_json()
+    assert report["zone_key"] == zone
+    assert report["branch"] and report["team"] and report["depot"] and report["authority"]
+
+
+def test_unavailable_primary_assigns_to_local_deputy(client):
+    handlers = client.get("/api/handlers").get_json()["handlers"]
+    north = [handler for handler in handlers if handler["zone_key"] == "Z1"]
+    client.patch(f"/api/handlers/{north[0]['id']}", json={"available": 0})
+    report = client.post("/api/reports", json=payload(pin_code="160001", violation_code="V02-MAJOR", description="Expired food stock.")).get_json()
+    assert report["handler_id"] == north[1]["id"]
+    assert report["handler_name"] == north[1]["name"]
+
+
+def test_multiple_reports_use_deterministic_least_load_assignment(client):
+    first = client.post("/api/reports", json=payload(pin_code="160001", violation_code="V02-MAJOR", description="Expired food stock.")).get_json()
+    second = client.post("/api/reports", json=payload(pin_code="160002", violation_code="V02-MAJOR", description="Expired food stock.")).get_json()
+    assert first["handler_name"] != second["handler_name"]
+    assert first["dispatch_id"] != second["dispatch_id"]
+
+
+def test_report_ordering_prioritizes_critical_over_passed(client):
+    passed = client.post("/api/reports", json=payload(pin_code="160001", violation_code="V05-PASSED", description="Compliant and satisfactory.")).get_json()
+    critical = client.post("/api/reports", json=payload(pin_code="260001", violation_code="V01-CRITICAL")).get_json()
+    reports = client.get("/api/reports").get_json()["reports"]
+    assert reports[0]["id"] == critical["id"]
+    assert reports[-1]["id"] == passed["id"]
+
+
 def test_handler_capacity_and_availability_are_enforced(client):
     handlers = client.get("/api/handlers").get_json()["handlers"]
     handler = handlers[0]
@@ -76,6 +108,17 @@ def test_emergency_priority_sets_p1_and_uses_emergency_pool(client):
     assert report["assignment_status"] == "Assigned"
 
 
+def test_critical_report_escalates_across_zones_when_local_capacity_is_unavailable(client):
+    local = [h for h in client.get("/api/handlers").get_json()["handlers"] if h["zone_key"] == "Z1"]
+    for handler in local:
+        client.patch(f"/api/handlers/{handler['id']}", json={"available": 0})
+    report = client.post("/api/reports", json=payload(pin_code="160001")).get_json()
+    assert report["assignment_status"] == "Assigned"
+    assert report["zone_key"] == "Z1"
+    assert report["handler_id"] not in {handler["id"] for handler in local}
+    assert "override" in report["decision"].lower()
+
+
 def test_status_update_synchronizes_dispatch_and_history(client):
     report = client.post("/api/reports", json=payload()).get_json()
     updated = client.patch(f"/api/reports/{report['id']}/status", json={"status": "In Progress"}).get_json()
@@ -85,6 +128,13 @@ def test_status_update_synchronizes_dispatch_and_history(client):
     assert resolved["status"] == "Resolved"
     assert resolved["assignment_status"] == "Resolved"
     assert len(resolved["status_history"]) == 4
+
+
+def test_resolved_status_is_terminal(client):
+    report = client.post("/api/reports", json=payload()).get_json()
+    resolved = client.patch(f"/api/reports/{report['id']}/status", json={"status": "Resolved"})
+    assert resolved.status_code == 200
+    assert client.patch(f"/api/reports/{report['id']}/status", json={"status": "In Progress"}).status_code == 409
 
 
 def test_capacity_overflow_queues_when_primary_and_backup_are_unavailable(client):

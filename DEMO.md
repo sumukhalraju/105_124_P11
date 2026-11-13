@@ -16,7 +16,7 @@ Open `http://127.0.0.1:5000`. The demo seeder is repeatable; stable idempotency 
 ## Suggested 5 minute walkthrough
 
 1. **New report:** submit a new critical observation using `INSAB1234`, `V01-CRITICAL`, PIN `560001`, and an Emergency urgency. Show the resulting report ID, category, P1 priority, and assignment.
-2. **User dashboard:** find the new report by ID; show report counts, category, status, zone, and handler.
+2. **User dashboard:** find the new report by ID and click it to open full report specifications, validation/classification explanations, routing, and status history. Use **Print / Save PDF**, **Download JSON**, or **Download CSV** to export the report.
 3. **Handler desk:** inspect the seeded roster and cases; move an Assigned report to In Progress and then Resolved. Its open handler load should drop.
 4. **Routing management:** compare all six PIN zones, primary and deputy loads, current queue, and fallback/override policy.
 5. **Analytics:** show the category and zone distributions, assignment outcomes, and resolved/unresolved totals.
@@ -24,6 +24,6 @@ Open `http://127.0.0.1:5000`. The demo seeder is repeatable; stable idempotency 
 
 ## Demo data included
 
-The eight synthetic reports cover Critical, Major, Minor, Advisory, Passed, a critical emergency override, an unknown routing zone, and a malformed inspector ID. They use fictitious names and `example.gov` addresses. No production or personal report data is included.
+The ten synthetic reports cover Critical, Major, Minor, Advisory, Passed, a critical emergency override, all six PIN zones, an unknown routing zone, a malformed inspector ID, and visible In Progress and Resolved lifecycle examples. They use fictitious names and `example.gov` addresses. No production or personal report data is included.
 
 To reset the walkthrough state, stop the local server and remove only `instance/demo.db`, then run the seeder again. This database contains demo-only data.

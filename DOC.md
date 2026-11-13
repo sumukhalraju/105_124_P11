@@ -15,7 +15,7 @@ FieldSafe is a Flask + SQLite production-style reference implementation of the p
 | Balanced handler capacity | Primary officer then deputy; maximum 10 open cases per handler |
 | Fallback and escalation | Unknown zone → Central correction queue; unavailable/full handlers → queue; Critical/Emergency → cross-zone priority pool |
 | Lifecycle | Pending → Assigned → In Progress → Resolved, with an auditable `status_history` table |
-| Dashboards | Submission, user report dashboard, handler desk, routing management, analytics |
+| Dashboards | Submission, user report dashboard with clickable report specifications and status history, handler desk, routing management, analytics; report exports to print/PDF, JSON, and CSV |
 | Database integration | SQLite schema, indexes, seed handler roster, transactional report/dispatch persistence |
 | Testing | Pytest unit/API/end-to-end coverage in `tests/` |
 

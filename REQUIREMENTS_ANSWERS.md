@@ -107,7 +107,7 @@ The photographs mention a MERN stack and also explicitly require a Flask backend
 | Interface | Delivered behavior |
 | --- | --- |
 | Report Submission | Reporter details, inspector ID, violation code, PIN, description, urgency; DFA/regex validation; category, priority, report ID, route, handler, and outcome feedback. |
-| User Dashboard | Total, pending, assigned, in-progress, resolved, rejected, and queued metrics; report search and status filter; current category, zone, handler, and status. |
+| User Dashboard | Total, pending, assigned, in-progress, resolved, rejected, and queued metrics; report search and status filter; clickable report details with validation/classification, routing, assignment, description, and status history; print-to-PDF and JSON/CSV downloads. |
 | Handler Dashboard | Roster, zone, role, open cases, availability and capacity controls; assigned-report table with category, priority, handler, submission time, and status updates. |
 | Routing Management | Six-zone table; primary/deputy loads and capacity; pending queue count; fallback and critical/emergency override policies. |
 | Analytics | Category, zone, and assignment distributions, plus resolved, unresolved, queued, and rejected counts. |
@@ -124,7 +124,7 @@ Run `python app.py` after installing `requirements.txt`; the browser application
 
 ### 12. At least 15 test cases
 
-The project currently has **38 automated test cases**, including parameterized cases. They cover:
+The project currently has **49 automated test cases**, including parameterized cases. They cover:
 
 - Valid and invalid inspector IDs and violation codes, including DFA/regex agreement.
 - All five categories, conflicting patterns, and precedence.

@@ -18,6 +18,8 @@ DEMO_REPORTS = [
     {"reporter_name": "Omar Demo", "reporter_email": "omar.demo@example.gov", "inspector_id": "INSLM6789", "violation_code": "V06-CRITICAL", "pin_code": "700001", "description": "Critical pest infestation in food preparation area.", "urgency": "High"},
     {"reporter_name": "Nila Demo", "reporter_email": "nila.demo@example.gov", "inspector_id": "INSNP7890", "violation_code": "V77-MAJOR", "pin_code": "900001", "description": "Major expired stock found; district zone needs correction.", "urgency": "High"},
     {"reporter_name": "Ira Demo", "reporter_email": "ira.demo@example.gov", "inspector_id": "BAD-ID", "violation_code": "V08-MINOR", "pin_code": "123456", "description": "Malformed inspector identifier demonstration.", "urgency": "Low"},
+    {"reporter_name": "Noah Demo", "reporter_email": "noah.demo@example.gov", "inspector_id": "INSQR8901", "violation_code": "V09-MAJOR", "pin_code": "680001", "description": "Major temperature-control failure in chilled storage.", "urgency": "High"},
+    {"reporter_name": "Sara Demo", "reporter_email": "sara.demo@example.gov", "inspector_id": "INSTU9012", "violation_code": "V10-ADVISORY", "pin_code": "520001", "description": "Advisory staff-training follow-up is recommended.", "urgency": "Low"},
 ]
 
 
@@ -35,8 +37,14 @@ def main() -> None:
                 existing += 1
             else:
                 raise SystemExit(f"Could not seed demo report {index}: HTTP {result.status_code} {result.get_data(as_text=True)}")
+            report_data = result.get_json()
+            desired_status = {2: "In Progress", 3: "Resolved"}.get(index)
+            if desired_status and report_data.get("status") != desired_status:
+                update = client.patch(f"/api/reports/{report_data['id']}/status", json={"status": desired_status, "note": "Seeded demo lifecycle example"})
+                if update.status_code != 200:
+                    raise SystemExit(f"Could not set demo report {index} to {desired_status}: {update.get_data(as_text=True)}")
     print(f"Demo database: {demo_db}")
-    print(f"Reports created: {created}; already present: {existing}")
+    print(f"Reports created: {created}; already present: {existing}; total samples: {len(DEMO_REPORTS)}")
     print("Start the demo with: $env:DATABASE='instance/demo.db'; python app.py")
 
 
