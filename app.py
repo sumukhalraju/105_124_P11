@@ -28,7 +28,7 @@ SEED_HANDLERS = [
 
 def create_app(test_config: dict | None = None) -> Flask:
     app = Flask(__name__, static_folder="static", static_url_path="/static")
-    app.config.from_mapping(DATABASE=str(DEFAULT_DB), TESTING=False)
+    app.config.from_mapping(DATABASE=os.environ.get("DATABASE", str(DEFAULT_DB)), TESTING=False)
     if test_config:
         app.config.update(test_config)
     Path(app.config["DATABASE"]).parent.mkdir(parents=True, exist_ok=True)

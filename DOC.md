@@ -139,6 +139,8 @@ The suite covers valid/invalid DFA and regex inputs, five categories, conflict p
 6. Use **Analytics** to reconcile category, zone, assignment, resolved and unresolved counts.
 7. Try `V77-UNKNOWN`, malformed identifiers, an unknown PIN prefix, and unavailable handlers to demonstrate rejected, correction-queue and capacity paths.
 
+For an isolated, repeatable demo database with synthetic examples across all five categories and key exception paths, follow [DEMO.md](DEMO.md) and run `python scripts/seed_demo.py`.
+
 ## Production hardening notes
 
 For a real deployment, put Flask behind a production WSGI server, configure HTTPS, add authentication/role authorization around handler and status mutations, add request rate limits and CSRF protection if cookie-authenticated, validate email and audit actor identity, paginate report queries, add structured logs/metrics, schedule SQLite backups or move to PostgreSQL, and add a background queue worker for retrying queued reports after handler capacity changes.
