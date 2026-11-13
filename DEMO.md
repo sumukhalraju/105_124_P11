@@ -24,6 +24,6 @@ Open `http://127.0.0.1:5000`. The demo seeder is repeatable; stable idempotency 
 
 ## Demo data included
 
-The eighteen synthetic reports cover all five categories, a critical priority override, all six PIN zones, an unknown routing zone, malformed inspector IDs, and visible In Progress and Resolved lifecycle examples. They use fictitious names and `example.gov` addresses. No production or personal report data is included. Existing demo-only submissions can bring the visible total close to 20.
+The repeatable demo has eighteen base reports plus six reproducibly randomized, open capacity cases (one in each zone), so a fresh demo shows 24 reports. The cases cover all five categories, a critical priority override, all six PIN zones, an unknown routing zone, malformed inspector IDs, and visible In Progress and Resolved lifecycle examples. They use fictitious names and `example.gov` addresses. No production or personal report data is included. Existing demo-only submissions may increase the total.
 
 To reset the walkthrough state, stop the local server and remove only `instance/demo.db`, then run the seeder again. This database contains demo-only data.

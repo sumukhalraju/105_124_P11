@@ -1,6 +1,7 @@
 """Populate an isolated, repeatable demo database with representative cases."""
 
 from pathlib import Path
+import random
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,14 +32,42 @@ DEMO_REPORTS = [
 ]
 
 
+def capacity_demo_reports() -> list[dict]:
+    """Return reproducible pseudo-random open cases spread across all six zones."""
+    rng = random.Random(20261113)
+    reports = []
+    for zone_number in range(1, 7):
+        for slot in range(1, 2):
+            letters = f"{chr(64 + zone_number)}{chr(75 + slot)}"
+            inspector_number = 8000 + zone_number * 10 + slot
+            category = rng.choice(["MINOR", "MAJOR", "ADVISORY"])
+            descriptions = {
+                "MINOR": "Minor storage observation used to demonstrate open handler capacity.",
+                "MAJOR": "Major hygiene follow-up used to demonstrate open handler capacity.",
+                "ADVISORY": "Advisory staff guidance used to demonstrate open handler capacity.",
+            }
+            reports.append({
+                "reporter_name": f"Capacity Demo Z{zone_number}-{slot}",
+                "reporter_email": f"capacity.z{zone_number}.{slot}@example.gov",
+                "inspector_id": f"INS{letters}{inspector_number}",
+                "violation_code": f"V19-{category}",
+                "pin_code": f"{zone_number}80001",
+                "description": f"{descriptions[category]} in zone Z{zone_number}.",
+                "urgency": "Medium",
+            })
+    return reports
+
+
 def main() -> None:
     demo_db = ROOT / "instance" / "demo.db"
     app = create_app({"TESTING": True, "DATABASE": str(demo_db)})
     with app.test_client() as client:
         created = 0
         existing = 0
-        for index, report in enumerate(DEMO_REPORTS, start=1):
-            result = client.post("/api/reports", json={**report, "idempotency_key": f"fieldsafe-demo-v1-{index}"})
+        reports = DEMO_REPORTS + capacity_demo_reports()
+        for index, report in enumerate(reports, start=1):
+            key = f"fieldsafe-demo-v1-{index}" if index <= len(DEMO_REPORTS) else f"fieldsafe-capacity-v1-{report['inspector_id']}"
+            result = client.post("/api/reports", json={**report, "idempotency_key": key})
             if result.status_code == 201:
                 created += 1
             elif result.status_code == 200 and result.get_json().get("duplicate"):
@@ -52,7 +81,7 @@ def main() -> None:
                 if update.status_code != 200:
                     raise SystemExit(f"Could not set demo report {index} to {desired_status}: {update.get_data(as_text=True)}")
     print(f"Demo database: {demo_db}")
-    print(f"Reports created: {created}; already present: {existing}; total demo samples: {len(DEMO_REPORTS)}")
+    print(f"Reports created: {created}; already present: {existing}; base samples: {len(DEMO_REPORTS)}; capacity cases: {len(capacity_demo_reports())}")
     print("Start the demo with: $env:DATABASE='instance/demo.db'; python app.py")
 
 
