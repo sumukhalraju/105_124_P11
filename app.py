@@ -82,8 +82,8 @@ def create_app(test_config: dict | None = None) -> Flask:
         violation_code = str(payload["violation_code"]).strip().upper()
         pin_code = str(payload["pin_code"]).strip()
         urgency = str(payload["urgency"]).strip().title()
-        if urgency not in {"Low", "Medium", "High", "Emergency"}:
-            return jsonify({"error": "Urgency must be Low, Medium, High, or Emergency."}), 400
+        if urgency not in {"Low", "Medium", "High", "Critical"}:
+            return jsonify({"error": "Urgency must be Low, Medium, High, or Critical."}), 400
         validation = validate_identifiers(inspector_id, violation_code)
         if len(pin_code) != 6 or not pin_code.isdigit():
             validation["valid"] = False
@@ -100,7 +100,7 @@ def create_app(test_config: dict | None = None) -> Flask:
         created_at = datetime.now(timezone.utc).isoformat()
         if validation["valid"]:
             category = classification["category"]
-            priority = 1 if urgency == "Emergency" else classification["priority"]
+            priority = 1 if urgency == "Critical" else classification["priority"]
             status = "Pending"
             validation_status = "accepted"
             validation_message = validation["message"]
@@ -252,6 +252,39 @@ def init_db():
     db = get_db()
     schema = (BASE_DIR / "schema.sql").read_text(encoding="utf-8")
     db.executescript(schema)
+    report_table = db.execute("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'reports'").fetchone()["sql"]
+    if "urgency IN ('Low', 'Medium', 'High', 'Emergency')" in report_table:
+        db.executescript("""
+            PRAGMA foreign_keys = OFF;
+            BEGIN IMMEDIATE;
+            CREATE TABLE reports_new (
+                id TEXT PRIMARY KEY,
+                idempotency_key TEXT UNIQUE,
+                reporter_name TEXT NOT NULL,
+                reporter_email TEXT NOT NULL,
+                inspector_id TEXT NOT NULL,
+                violation_code TEXT NOT NULL,
+                pin_code TEXT NOT NULL,
+                description TEXT NOT NULL,
+                urgency TEXT NOT NULL CHECK (urgency IN ('Low', 'Medium', 'High', 'Critical')),
+                category TEXT NOT NULL CHECK (category IN ('Critical', 'Major', 'Minor', 'Advisory', 'Passed')),
+                classification_reason TEXT NOT NULL,
+                priority INTEGER NOT NULL CHECK (priority BETWEEN 1 AND 5),
+                validation_status TEXT NOT NULL CHECK (validation_status IN ('accepted', 'rejected')),
+                validation_message TEXT NOT NULL,
+                status TEXT NOT NULL CHECK (status IN ('Pending', 'Assigned', 'In Progress', 'Resolved', 'Rejected')),
+                created_at TEXT NOT NULL
+            );
+            INSERT INTO reports_new SELECT id, idempotency_key, reporter_name, reporter_email, inspector_id, violation_code, pin_code, description,
+                CASE urgency WHEN 'Emergency' THEN 'Critical' ELSE urgency END,
+                category, classification_reason, priority, validation_status, validation_message, status, created_at FROM reports;
+            DROP TABLE reports;
+            ALTER TABLE reports_new RENAME TO reports;
+            CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
+            CREATE INDEX IF NOT EXISTS idx_reports_category ON reports(category);
+            COMMIT;
+            PRAGMA foreign_keys = ON;
+        """)
     if db.execute("SELECT COUNT(*) AS count FROM handlers").fetchone()["count"] == 0:
         db.executemany("INSERT INTO handlers (name, zone_key, role, available, capacity) VALUES (?, ?, ?, 1, 10)", SEED_HANDLERS)
     db.commit()

@@ -13,7 +13,7 @@ FieldSafe is a Flask + SQLite production-style reference implementation of the p
 | Deterministic conflicts | Critical > Major > Minor > Advisory > Passed |
 | Six routing zones | Z1–Z6, keyed by the first digit of a six-digit PIN |
 | Balanced handler capacity | Primary officer then deputy; maximum 10 open cases per handler |
-| Fallback and escalation | Unknown zone → Central correction queue; unavailable/full handlers → queue; Critical/Emergency → cross-zone priority pool |
+| Fallback and escalation | Unknown zone → Central correction queue; unavailable/full handlers → queue; Critical category/urgency → cross-zone priority pool |
 | Lifecycle | Pending → Assigned → In Progress → Resolved, with an auditable `status_history` table |
 | Dashboards | Submission, user report dashboard with clickable report specifications and status history, handler desk, routing management, analytics; report exports to print/PDF, JSON, and CSV |
 | Database integration | SQLite schema, indexes, seed handler roster, transactional report/dispatch persistence |
@@ -58,7 +58,7 @@ Mapped tokens are `CRITICAL`, `MAJOR`, `MINOR`, `ADVISORY`, and `PASSED`. Descri
 Critical > Major > Minor > Advisory > Passed
 ```
 
-Emergency urgency is promoted to priority 1 and activates the emergency dispatch pool. The category and the explanation are persisted with the original report.
+Critical urgency is promoted to priority 1 and activates the critical dispatch pool. The category and the explanation are persisted with the original report.
 
 ## Routing and dispatch
 
@@ -71,7 +71,7 @@ Emergency urgency is promoted to priority 1 and activates the emergency dispatch
 | Z5 South | 5 | South Regulatory Branch | Echo | Bengaluru Depot |
 | Z6 East | 6 | East Regulatory Branch | Foxtrot | Kolkata Depot |
 
-The allocator first prefers an available local district officer, then the local deputy. A handler is eligible only while its open load is below `min(capacity, 10)`. Critical or Emergency work prefers the local zone and can then use an available officer in another zone. If no handler is eligible, the report remains Pending and the dispatch decision is Queued. Valid reports with an unknown prefix (for example `900001`) go to the Central correction queue. Malformed PINs are rejected before dispatch.
+The allocator first prefers an available local district officer, then the local deputy. A handler is eligible only while its open load is below `min(capacity, 10)`. Critical category or urgency work prefers the local zone and can then use an available officer in another zone. If no handler is eligible, the report remains Pending and the dispatch decision is Queued. Valid reports with an unknown prefix (for example `900001`) go to the Central correction queue. Malformed PINs are rejected before dispatch.
 
 Report creation runs under a SQLite `BEGIN IMMEDIATE` transaction. An optional `idempotency_key` is unique, and each report has at most one dispatch row, preventing duplicate assignments in normal concurrent submissions.
 
@@ -127,7 +127,7 @@ py -m pytest --cov=portal --cov=app --cov-report=term-missing
 node --check static/app.js
 ```
 
-The suite covers valid/invalid DFA and regex inputs, five categories, conflict precedence, unmapped codes, malformed payloads, all zones, fallback, handler availability/capacity, emergency override, idempotency, status synchronization, search, dashboard counts, and analytics persistence.
+The suite covers valid/invalid DFA and regex inputs, five categories, conflict precedence, unmapped codes, malformed payloads, all zones, fallback, handler availability/capacity, critical priority override, idempotency, status synchronization, search, dashboard counts, and analytics persistence.
 
 ## Full workflow demonstration
 

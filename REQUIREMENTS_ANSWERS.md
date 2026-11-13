@@ -93,7 +93,7 @@ The lifecycle is `Pending → Assigned → In Progress → Resolved`. Allowed tr
 - **Unknown zone:** a valid six-digit PIN outside the configured prefixes is routed to the Central correction queue and remains Pending.
 - **Malformed identifiers or PIN:** rejected before dispatch, with an explanatory validation message.
 - **Unavailable or full handlers:** dispatch uses the eligible local deputy/backup; when no eligible handler is available it records a queued decision.
-- **Priority override:** Critical classification or Emergency urgency promotes work into the emergency pool. The allocator prefers the local zone and can select an available handler from another zone when necessary; the decision is recorded.
+- **Priority override:** Critical classification or Critical urgency promotes work into the priority pool. The allocator prefers the local zone and can select an available handler from another zone when necessary; the decision is recorded.
 - **Simultaneous or repeated submissions:** report creation is serialized in SQLite, and a caller-supplied idempotency key returns the original report on retry. Dispatch rows are unique per report.
 
 ## Part C — Frontend and Web Application Development
@@ -109,7 +109,7 @@ The photographs mention a MERN stack and also explicitly require a Flask backend
 | Report Submission | Reporter details, inspector ID, violation code, PIN, description, urgency; DFA/regex validation; category, priority, report ID, route, handler, and outcome feedback. |
 | User Dashboard | Total, pending, assigned, in-progress, resolved, rejected, and queued metrics; report search and status filter; clickable report details with validation/classification, routing, assignment, description, and status history; print-to-PDF and JSON/CSV downloads. |
 | Handler Dashboard | Roster, zone, role, open cases, availability and capacity controls; assigned-report table with category, priority, handler, submission time, and status updates. |
-| Routing Management | Six-zone table; primary/deputy loads and capacity; pending queue count; fallback and critical/emergency override policies. |
+| Routing Management | Six-zone table; primary/deputy loads and capacity; pending queue count; fallback and critical priority override policies. |
 | Analytics | Category, zone, and assignment distributions, plus resolved, unresolved, queued, and rejected counts. |
 
 ### 10. Integrate frontend, Flask, and SQLite
@@ -130,7 +130,7 @@ The project currently has **49 automated test cases**, including parameterized c
 - All five categories, conflicting patterns, and precedence.
 - Unknown category rejection and malformed required data/PINs.
 - Report submission, database persistence, history, and duplicate idempotency.
-- All six routing entries, unknown-zone fallback, handler availability, capacity and emergency priority.
+- All six routing entries, unknown-zone fallback, handler availability, capacity and critical priority override.
 - Status changes and dispatch-load synchronization.
 - Search, filters, dashboard totals, and analytics aggregation.
 
@@ -146,7 +146,7 @@ Run them with `python -m pytest -q`. The recorded coverage run reached 92% acros
 6. Update status through the Handler Desk and confirm each transition in history and the released handler load after resolution.
 7. Inspect routing decisions and zone loads, then reconcile report outcomes in Analytics.
 
-The repeatable demo dataset includes valid examples for every category, an emergency priority case, an unknown-zone correction-queue case, and a malformed-ID rejection case.
+The repeatable demo dataset includes valid examples for every category, a critical priority case, an unknown-zone correction-queue case, and a malformed-ID rejection case.
 
 ## Expected outcome
 

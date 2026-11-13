@@ -32,7 +32,7 @@ def _handler_loads(conn: sqlite3.Connection) -> dict[int, int]:
 def _eligible_handlers(conn: sqlite3.Connection, zone_key: str | None, critical: bool, loads: dict[int, int]) -> list[sqlite3.Row]:
     rows = conn.execute("SELECT * FROM handlers WHERE available = 1 ORDER BY id").fetchall()
     zone_rows = [row for row in rows if zone_key and row["zone_key"] == zone_key]
-    # Critical work can use the emergency pool across zones after preferring the local zone.
+    # Critical work can use the priority pool across zones after preferring the local zone.
     pool = zone_rows + ([row for row in rows if row not in zone_rows] if critical else [])
     def sort_key(row: sqlite3.Row) -> tuple:
         load = loads.get(row["id"], 0)
@@ -48,7 +48,7 @@ def dispatch_report(conn: sqlite3.Connection, report: sqlite3.Row) -> dict:
     if existing:
         return dict(existing)
     route = resolve_zone(report["pin_code"])
-    critical = report["category"] == "Critical" or report["urgency"] == "Emergency"
+    critical = report["category"] == "Critical" or report["urgency"] == "Critical"
     now = datetime.now(timezone.utc).isoformat()
     if route is None:
         decision = "Central correction queue: unknown PIN zone or routing key."
@@ -62,7 +62,7 @@ def dispatch_report(conn: sqlite3.Connection, report: sqlite3.Row) -> dict:
     if handler:
         assignment_status = "Assigned"
         status = "Assigned"
-        decision = "Emergency priority override" if critical and handler["zone_key"] != route["zone_key"] else "Primary/backup capacity check passed"
+        decision = "Critical priority override" if critical and handler["zone_key"] != route["zone_key"] else "Primary/backup capacity check passed"
         conn.execute("INSERT INTO dispatches (report_id, zone_key, branch, team, depot, authority, handler_id, assignment_status, decision, priority, routed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (report["id"], route["zone_key"], route["branch"], route["team"], route["depot"], route["authority"], handler["id"], assignment_status, decision, report["priority"], now))
         conn.execute("UPDATE reports SET status = ? WHERE id = ?", (status, report["id"]))
     else:

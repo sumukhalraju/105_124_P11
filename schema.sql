@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS reports (
     violation_code TEXT NOT NULL,
     pin_code TEXT NOT NULL,
     description TEXT NOT NULL,
-    urgency TEXT NOT NULL CHECK (urgency IN ('Low', 'Medium', 'High', 'Emergency')),
+    urgency TEXT NOT NULL CHECK (urgency IN ('Low', 'Medium', 'High', 'Critical')),
     category TEXT NOT NULL CHECK (category IN ('Critical', 'Major', 'Minor', 'Advisory', 'Passed')),
     classification_reason TEXT NOT NULL,
     priority INTEGER NOT NULL CHECK (priority BETWEEN 1 AND 5),

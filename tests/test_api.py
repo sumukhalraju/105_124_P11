@@ -102,10 +102,16 @@ def test_handler_capacity_and_availability_are_enforced(client):
     assert updated["available"] == 0 and updated["capacity"] == 5
 
 
-def test_emergency_priority_sets_p1_and_uses_emergency_pool(client):
-    report = client.post("/api/reports", json=payload(violation_code="V02-MAJOR", urgency="Emergency", description="Expired food stock." )).get_json()
+def test_critical_urgency_sets_p1_and_uses_priority_pool(client):
+    report = client.post("/api/reports", json=payload(violation_code="V02-MAJOR", urgency="Critical", description="Expired food stock." )).get_json()
     assert report["priority"] == 1
     assert report["assignment_status"] == "Assigned"
+    assert report["urgency"] == "Critical"
+
+
+def test_emergency_is_no_longer_a_supported_urgency_label(client):
+    response = client.post("/api/reports", json=payload(urgency="Emergency"))
+    assert response.status_code == 400
 
 
 def test_critical_report_escalates_across_zones_when_local_capacity_is_unavailable(client):

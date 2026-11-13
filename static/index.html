@@ -41,10 +41,10 @@
             </div>
             <div class="field-grid two">
               <label>PIN code<input name="pin_code" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="560001"></label>
-              <label>Urgency<select name="urgency"><option>Low</option><option selected>Medium</option><option>High</option><option>Emergency</option></select></label>
+              <label>Urgency<select name="urgency"><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></label>
             </div>
             <label>Inspection description<textarea name="description" required rows="5" placeholder="Describe observations, evidence and immediate risk..."></textarea></label>
-            <div class="inline-note"><span class="info-icon">i</span><span>Critical and emergency reports may trigger the cross-zone priority override. Unknown PIN zones go to the central correction queue.</span></div>
+            <div class="inline-note"><span class="info-icon">i</span><span>Critical category or urgency may trigger the cross-zone priority override. Unknown PIN zones go to the central correction queue.</span></div>
             <div id="form-errors" class="form-errors" role="alert"></div>
             <button class="primary-button" type="submit">Validate & dispatch report <span>→</span></button>
           </form>

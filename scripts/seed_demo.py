@@ -10,7 +10,7 @@ from app import create_app  # noqa: E402
 
 
 DEMO_REPORTS = [
-    {"reporter_name": "Asha Demo", "reporter_email": "asha.demo@example.gov", "inspector_id": "INSAB1234", "violation_code": "V01-CRITICAL", "pin_code": "560001", "description": "Critical contamination risk observed near raw meat storage.", "urgency": "Emergency"},
+    {"reporter_name": "Asha Demo", "reporter_email": "asha.demo@example.gov", "inspector_id": "INSAB1234", "violation_code": "V01-CRITICAL", "pin_code": "560001", "description": "Critical contamination risk observed near raw meat storage.", "urgency": "Critical"},
     {"reporter_name": "Ravi Demo", "reporter_email": "ravi.demo@example.gov", "inspector_id": "INSCD2345", "violation_code": "V02-MAJOR", "pin_code": "110001", "description": "Major hygiene violation and unsafe food handling.", "urgency": "High"},
     {"reporter_name": "Mina Demo", "reporter_email": "mina.demo@example.gov", "inspector_id": "INSEF3456", "violation_code": "V03-MINOR", "pin_code": "226001", "description": "Minor label and storage issue.", "urgency": "Medium"},
     {"reporter_name": "Dev Demo", "reporter_email": "dev.demo@example.gov", "inspector_id": "INSGH4567", "violation_code": "V04-ADVISORY", "pin_code": "302001", "description": "Advisory observation; staff training is recommended.", "urgency": "Low"},
