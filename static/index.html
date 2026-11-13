@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Operational dashboard for routing and resolving food safety inspection reports.">
+  <title>FieldSafe | Food Inspection Portal</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">FS</span><div><strong>FieldSafe</strong><span>Food Safety Inspection Portal</span></div></div>
+    <div class="topbar-status"><span class="status-dot"></span> Operations live <button class="icon-button" id="refresh-button" type="button" aria-label="Refresh dashboard" title="Refresh dashboard">↻</button></div>
+  </header>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="workspace-label">WORKSPACE</div>
+      <button class="nav-item active" data-view="submit"><span>＋</span><span class="nav-label">New report</span></button>
+      <button class="nav-item" data-view="dashboard"><span>▦</span><span class="nav-label">User dashboard</span></button>
+      <button class="nav-item" data-view="handler"><span>◉</span><span class="nav-label">Handler desk</span></button>
+      <button class="nav-item" data-view="routing"><span>⌁</span><span class="nav-label">Routing management</span></button>
+      <button class="nav-item" data-view="analytics"><span>▥</span><span class="nav-label">Analytics</span></button>
+      <div class="sidebar-footer"><div class="avatar">AD</div><div><strong>Admin console</strong><small>District operations</small></div></div>
+    </aside>
+    <main class="main-content">
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      <section class="view active" id="view-submit">
+        <div class="page-heading"><div><p class="eyebrow">REPORT INTAKE</p><h1>Submit inspection report</h1><p class="muted">Validate, classify and dispatch a new field report in one flow.</p></div><div class="heading-chip">DFA + regex verified</div></div>
+        <div class="form-layout">
+          <form id="report-form" class="card form-card">
+            <div class="section-title"><div><h2>Report details</h2><p>All fields are persisted with the validation outcome.</p></div><span class="step-pill">01 / 02</span></div>
+            <div class="field-grid two">
+              <label>Reporter name<input name="reporter_name" required placeholder="e.g. Priya Sharma"></label>
+              <label>Reporter email<input name="reporter_email" type="email" required placeholder="name@agency.gov"></label>
+            </div>
+            <div class="field-grid two">
+              <label>Inspector ID <span class="hint">INS + 2 letters + 4 digits</span><input name="inspector_id" required placeholder="INSAB1234" pattern="INS[A-Z]{2}[0-9]{4}"></label>
+              <label>Violation code <span class="hint">V##-CATEGORY</span><input name="violation_code" required placeholder="V01-CRITICAL"></label>
+            </div>
+            <div class="field-grid two">
+              <label>PIN code<input name="pin_code" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="560001"></label>
+              <label>Urgency<select name="urgency"><option>Low</option><option selected>Medium</option><option>High</option><option>Emergency</option></select></label>
+            </div>
+            <label>Inspection description<textarea name="description" required rows="5" placeholder="Describe observations, evidence and immediate risk..."></textarea></label>
+            <div class="inline-note"><span class="info-icon">i</span><span>Critical and emergency reports may trigger the cross-zone priority override. Unknown PIN zones go to the central correction queue.</span></div>
+            <div id="form-errors" class="form-errors" role="alert"></div>
+            <button class="primary-button" type="submit">Validate & dispatch report <span>→</span></button>
+          </form>
+          <aside class="card side-card">
+            <div class="section-title"><div><h2>Dispatch preview</h2><p>What happens after submission</p></div></div>
+            <div class="workflow"><div class="workflow-step done"><span>✓</span><div><strong>Validate</strong><small>DFA and regex agreement</small></div></div><div class="workflow-line"></div><div class="workflow-step"><span>02</span><div><strong>Classify</strong><small>One of five categories</small></div></div><div class="workflow-line"></div><div class="workflow-step"><span>03</span><div><strong>Route</strong><small>Zone table and capacity check</small></div></div><div class="workflow-line"></div><div class="workflow-step"><span>04</span><div><strong>Track</strong><small>Assigned through resolved</small></div></div></div>
+            <div class="rule-box"><strong>Identifier rules</strong><code>INS[A-Z]{2}[0-9]{4}</code><code>V[0-9]{2}-[A-Z][A-Z0-9_]*</code></div>
+          </aside>
+        </div>
+        <div id="submission-result" class="card result-card hidden"></div>
+      </section>
+
+      <section class="view" id="view-dashboard"><div class="page-heading"><div><p class="eyebrow">USER DASHBOARD</p><h1>Reports at a glance</h1><p class="muted">Search a report to see its current status, category and handler.</p></div></div><div id="stats-grid" class="stats-grid"></div><div class="card table-card"><div class="table-toolbar"><div><h2>Recent reports</h2><p>Priority ordered, newest first</p></div><div class="toolbar-actions"><label class="sr-only" for="report-search">Search reports</label><input id="report-search" aria-label="Search report ID, inspector or description" placeholder="Search report ID, inspector or description"><label class="sr-only" for="status-filter">Filter by status</label><select id="status-filter" aria-label="Filter by status"><option value="">All statuses</option><option>Pending</option><option>Assigned</option><option>In Progress</option><option>Resolved</option><option>Rejected</option></select></div></div><div class="table-wrap"><table><caption class="sr-only">Recent food inspection reports</caption><thead><tr><th scope="col">Report</th><th scope="col">Category</th><th scope="col">Zone / handler</th><th scope="col">Status</th><th scope="col">Submitted</th></tr></thead><tbody id="reports-table"></tbody></table></div></div></section>
+
+      <section class="view" id="view-handler"><div class="page-heading"><div><p class="eyebrow">HANDLER DESK</p><h1>Capacity & assignments</h1><p class="muted">Keep availability and capacity accurate so dispatch remains balanced.</p></div></div><div class="card table-card"><div class="table-toolbar"><div><h2>Handler roster</h2><p>Open cases are calculated from active assignments.</p></div><button class="secondary-button" id="handler-refresh" type="button">Refresh roster</button></div><div class="table-wrap"><table><caption class="sr-only">Handler roster</caption><thead><tr><th scope="col">Handler</th><th scope="col">Zone</th><th scope="col">Role</th><th scope="col">Open cases</th><th scope="col">Availability</th><th scope="col">Capacity</th><th scope="col"></th></tr></thead><tbody id="handlers-table"></tbody></table></div></div><div class="card table-card assignments-card"><div class="table-toolbar"><div><h2>Assigned reports</h2><p>Update the current lifecycle status from the handler desk.</p></div></div><div class="table-wrap"><table><caption class="sr-only">Assigned inspection reports</caption><thead><tr><th scope="col">Report</th><th scope="col">Category</th><th scope="col">Priority</th><th scope="col">Handler</th><th scope="col">Submitted</th><th scope="col">Status</th></tr></thead><tbody id="handler-reports-table"></tbody></table></div></div></section>
+
+      <section class="view" id="view-routing"><div class="page-heading"><div><p class="eyebrow">ROUTING MANAGEMENT</p><h1>Routing table & decisions</h1><p class="muted">Six deterministic zones with a documented fallback queue.</p></div></div><div id="routing-grid" class="routing-grid"></div><div class="card table-card"><div class="table-toolbar"><div><h2>Queue & escalation rules</h2><p>Critical priority overrides and capacity exceptions are auditable.</p></div></div><div id="routing-note" class="routing-note"></div></div></section>
+
+      <section class="view" id="view-analytics"><div class="page-heading"><div><p class="eyebrow">ANALYTICS</p><h1>Operational intelligence</h1><p class="muted">Distribution by category, zone and assignment outcome.</p></div></div><div id="analytics-kpis" class="stats-grid"></div><div class="analytics-grid"><div class="card chart-card"><h2>Category mix</h2><div id="category-chart" class="bars" aria-label="Category mix chart"></div></div><div class="card chart-card"><h2>Zone distribution</h2><div id="zone-chart" class="bars" aria-label="Zone distribution chart"></div></div><div class="card chart-card wide"><h2>Assignment outcomes</h2><div id="assignment-chart" class="bars horizontal" aria-label="Assignment outcomes chart"></div></div></div></section>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
+
